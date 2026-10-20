@@ -35,11 +35,12 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [freeLeft, setFreeLeft] = useState(3)
   const [copied, setCopied] = useState(false)
+  const [csOpen, setCsOpen] = useState(false)
 
   const handleSubmit = async () => {
     if (!input.trim()) return
     if (freeLeft <= 0) {
-      alert(`今日免费次数已用完\n\n付费方式：0.99元/次 或 19.9元/月无限次\n添加微信：${CONTACT_WECHAT}（备注「论文」）`)
+      setCsOpen(true)
       return
     }
 
@@ -235,16 +236,18 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col items-center gap-3">
-            {/* 有收款码时放到 public/qrcode.png，会自动显示 */}
-            <QrCodeImage />
-            <p className="text-slate-600 text-sm">
-              添加微信：
-              <span className="font-semibold text-[var(--primary-deep)] select-all">{CONTACT_WECHAT}</span>
-              （备注「论文」）· 24小时内处理
-            </p>
-            <p className="text-slate-400 text-xs max-w-md leading-relaxed">{PAYMENT_DELIVERY}</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => setCsOpen(true)}
+            className="
+              mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
+              text-[var(--primary-deep)] bg-sky-50 border border-sky-200
+              transition-all duration-200
+              hover:bg-sky-100 hover:-translate-y-0.5 hover:shadow-sm
+            "
+          >
+            点击右下角客服扫码开通
+          </button>
         </section>
 
         <footer className="mt-10 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
@@ -252,20 +255,92 @@ export default function Home() {
           <p className="mt-1">使用者应遵守所在院校的学术规范，因使用本工具产生的一切后果由使用者自行承担。</p>
         </footer>
       </main>
+
+      <CustomerService open={csOpen} onOpenChange={setCsOpen} />
     </div>
   )
 }
 
-function QrCodeImage() {
-  const [visible, setVisible] = useState(true)
-  if (!visible) return null
+function CustomerService({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
   return (
-    <img
-      src="/qrcode.png"
-      alt="微信收款"
-      className="w-32 h-32 mx-auto rounded-lg border border-slate-200 bg-white object-contain"
-      onError={() => setVisible(false)}
-    />
+    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+      {/* 展开面板 */}
+      <div
+        className={`
+          w-[300px] sm:w-[320px] origin-bottom-right
+          rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-300/50
+          transition-all duration-250 ease-out
+          ${open
+            ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+            : 'opacity-0 scale-90 translate-y-3 pointer-events-none'
+          }
+        `}
+        role="dialog"
+        aria-label="微信客服收款"
+        aria-hidden={!open}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-[#07c160]/5 rounded-t-2xl">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#07c160] animate-pulse" />
+            <span className="text-sm font-semibold text-slate-800">微信客服 / 扫码开通</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="
+              w-8 h-8 rounded-full text-slate-400 text-lg leading-none
+              hover:bg-slate-100 hover:text-slate-600 transition-colors
+            "
+            aria-label="关闭"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="p-4 flex flex-col items-center gap-3">
+          <p className="text-xs text-slate-500 text-center">
+            ¥0.99 / 次 · ¥19.9 / 月无限 · 备注「论文」
+          </p>
+          <img
+            src="/qrcode.png"
+            alt="微信收款码"
+            className="w-56 h-56 sm:w-64 sm:h-64 rounded-xl border border-slate-200 bg-white object-contain shadow-sm"
+          />
+          <p className="text-sm font-medium text-slate-700 text-center select-all">
+            {CONTACT_WECHAT}
+          </p>
+          <p className="text-xs text-slate-400 text-center leading-relaxed">{PAYMENT_DELIVERY}</p>
+        </div>
+      </div>
+
+      {/* 悬浮按钮 */}
+      <button
+        type="button"
+        onClick={() => onOpenChange(!open)}
+        className={`
+          group flex items-center gap-2 pl-3 pr-4 h-14 rounded-full
+          bg-[#07c160] text-white font-semibold text-sm
+          shadow-lg shadow-emerald-500/40
+          transition-all duration-200
+          hover:bg-[#06ad56] hover:scale-105 hover:shadow-xl
+          active:scale-95
+          ${open ? 'ring-4 ring-emerald-200' : ''}
+        `}
+        aria-expanded={open}
+        aria-label={open ? '关闭客服' : '打开客服'}
+      >
+        <span className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg transition-transform duration-200 group-hover:rotate-6">
+          {open ? '×' : '💬'}
+        </span>
+        <span>{open ? '收起' : '客服开通'}</span>
+      </button>
+    </div>
   )
 }
 
