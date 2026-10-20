@@ -27,72 +27,6 @@ const TOOLS: Record<Tab, { label: string; desc: string; placeholder: string }> =
   },
 }
 
-function ActionButtons({
-  loading,
-  canSubmit,
-  onSubmit,
-  onClear,
-  showCopy,
-  copied,
-  onCopy,
-}: {
-  loading: boolean
-  canSubmit: boolean
-  onSubmit: () => void
-  onClear: () => void
-  showCopy?: boolean
-  copied?: boolean
-  onCopy?: () => void
-}) {
-  return (
-    <div className="flex gap-2 items-stretch">
-      <button
-        type="button"
-        onClick={onSubmit}
-        disabled={loading || !canSubmit}
-        className="
-          flex-1 min-h-11 px-4 rounded-xl text-sm font-semibold text-white
-          bg-[var(--primary)] shadow-sm shadow-sky-200
-          transition-all duration-200 ease-out
-          hover:bg-[var(--primary-deep)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-sky-200
-          active:translate-y-0 active:scale-[0.98]
-          disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-sm
-        "
-      >
-        {loading ? '处理中...' : '开始处理'}
-      </button>
-      <button
-        type="button"
-        onClick={onClear}
-        className="
-          min-h-11 px-4 rounded-xl text-sm font-medium
-          text-[var(--muted)] bg-white border border-[var(--border)]
-          transition-all duration-200 ease-out
-          hover:border-sky-300 hover:text-[var(--primary-deep)] hover:bg-sky-50 hover:-translate-y-0.5
-          active:translate-y-0 active:scale-[0.98]
-        "
-      >
-        清空
-      </button>
-      {showCopy && (
-        <button
-          type="button"
-          onClick={onCopy}
-          className="
-            min-h-11 px-4 rounded-xl text-sm font-medium
-            text-[var(--primary-deep)] bg-[var(--primary-soft)] border border-sky-200
-            transition-all duration-200 ease-out
-            hover:bg-sky-100 hover:-translate-y-0.5 hover:border-sky-300
-            active:translate-y-0 active:scale-[0.98]
-          "
-        >
-          {copied ? '已复制 ✓' : '复制'}
-        </button>
-      )}
-    </div>
-  )
-}
-
 export default function Home() {
   const [tab, setTab] = useState<Tab>('rewrite')
   const [input, setInput] = useState('')
@@ -199,9 +133,9 @@ export default function Home() {
           })}
         </div>
 
-        {/* Editor: input | arrow | output */}
+        {/* Editor: input | output */}
         <div
-          className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 lg:gap-5 items-stretch animate-fade-up"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5 items-stretch animate-fade-up"
           style={{ animationDelay: '120ms' }}
         >
           {/* Input */}
@@ -222,99 +156,64 @@ export default function Home() {
                 hover:border-sky-200
               "
             />
-            <ActionButtons
-              loading={loading}
-              canSubmit={!!input.trim()}
-              onSubmit={handleSubmit}
-              onClear={handleClear}
-            />
+            <div className="flex gap-2 items-stretch">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={loading || !input.trim()}
+                className="
+                  flex-1 min-h-11 px-4 rounded-xl text-sm font-semibold text-white
+                  bg-[var(--primary)] shadow-sm shadow-sky-200
+                  transition-all duration-200 ease-out
+                  hover:bg-[var(--primary-deep)] hover:-translate-y-0.5 hover:shadow-md hover:shadow-sky-200
+                  active:translate-y-0 active:scale-[0.98]
+                  disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-sm
+                "
+              >
+                {loading ? '处理中...' : '开始处理'}
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="
+                  min-h-11 px-4 rounded-xl text-sm font-medium
+                  text-[var(--muted)] bg-white border border-[var(--border)]
+                  transition-all duration-200 ease-out
+                  hover:border-sky-300 hover:text-[var(--primary-deep)] hover:bg-sky-50 hover:-translate-y-0.5
+                  active:translate-y-0 active:scale-[0.98]
+                "
+              >
+                清空
+              </button>
+            </div>
           </section>
-
-          {/* Center arrow：默认静止，悬停/处理中才动 */}
-          <div className="hidden lg:flex flex-col items-center justify-center px-1 select-none">
-            <div
-              className={`
-                arrow-btn w-14 h-14 rounded-full flex items-center justify-center cursor-default
-                bg-[var(--primary-soft)] border border-sky-200 text-[var(--primary-deep)]
-                transition-all duration-200
-                hover:bg-sky-100 hover:border-sky-300
-                ${loading ? 'is-busy animate-pulse-ring' : ''}
-              `}
-              aria-hidden
-            >
-              <svg
-                className="arrow-icon w-7 h-7"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14" />
-                <path d="M13 6l6 6-6 6" />
-              </svg>
-            </div>
-            <p className="mt-3 text-xs font-medium text-[var(--muted)] tracking-wide">
-              {loading ? '处理中' : '一键转换'}
-            </p>
-          </div>
-
-          {/* Mobile arrow */}
-          <div className="flex lg:hidden items-center justify-center py-1">
-            <div className={`arrow-btn flex items-center gap-2 text-[var(--primary-deep)] text-sm font-medium ${loading ? 'is-busy' : ''}`}>
-              <span className="h-px w-8 bg-sky-200" />
-              <svg
-                className="arrow-icon w-5 h-5 rotate-90"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14" />
-                <path d="M13 6l6 6-6 6" />
-              </svg>
-              <span className="h-px w-8 bg-sky-200" />
-            </div>
-          </div>
 
           {/* Output */}
           <section className="flex flex-col gap-3 min-h-0 bg-white border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-sm transition-shadow duration-200 hover:shadow-md">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-semibold text-[var(--text)]">处理结果</label>
-              <span className="text-xs text-[var(--muted)] tabular-nums">{output.length} 字</span>
+              <label className="text-sm text-slate-500 font-medium">处理结果</label>
+              <span className="text-xs text-slate-400">{output.length} 字</span>
             </div>
-            <div
-              className="
-                flex-1 min-h-64 lg:min-h-72 p-4 rounded-xl text-sm leading-relaxed overflow-auto
-                bg-[var(--bg)] border border-[var(--border)]
-                transition-colors duration-200
-              "
-            >
+            <div className="flex-1 min-h-72 p-4 rounded-xl text-sm leading-relaxed bg-slate-50 border border-slate-200 overflow-auto">
               {loading ? (
-                <div className="h-full min-h-56 flex flex-col items-center justify-center gap-3 text-[var(--muted)]">
-                  <div className="spinner" />
-                  <p className="text-sm">AI 正在处理，请稍候…</p>
+                <div className="flex items-center justify-center h-64">
+                  <div className="w-6 h-6 border-2 border-sky-400/30 border-t-sky-400 rounded-full animate-spin" />
                 </div>
               ) : output ? (
-                <p className="text-[var(--text)] whitespace-pre-wrap animate-fade-up">{output}</p>
+                <p className="text-slate-800 whitespace-pre-wrap">{output}</p>
               ) : (
-                <div className="h-full min-h-56 flex items-center justify-center">
-                  <p className="text-slate-400 text-sm">结果将在这里显示</p>
-                </div>
+                <p className="text-slate-400 text-center mt-24">结果将在这里显示</p>
               )}
             </div>
-            <ActionButtons
-              loading={loading}
-              canSubmit={!!input.trim()}
-              onSubmit={handleSubmit}
-              onClear={handleClear}
-              showCopy={!!output}
-              copied={copied}
-              onCopy={handleCopy}
-            />
+            {output && (
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="py-2.5 rounded-xl text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all border border-slate-200"
+              >
+                {copied ? '已复制 ✓' : '复制结果'}
+              </button>
+            )}
           </section>
         </div>
 
