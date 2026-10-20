@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { CONTACT_WECHAT, PAYMENT_DELIVERY } from '@/lib/contact'
 
 type Tab = 'rewrite' | 'polish' | 'reference'
 
@@ -38,7 +39,7 @@ export default function Home() {
   const handleSubmit = async () => {
     if (!input.trim()) return
     if (freeLeft <= 0) {
-      alert('今日免费次数已用完\n\n付费方式：0.99元/次 或 19.9元/月无限次\n请微信联系客服开通')
+      alert(`今日免费次数已用完\n\n付费方式：0.99元/次 或 19.9元/月无限次\n添加微信：${CONTACT_WECHAT}（备注「论文」）`)
       return
     }
 
@@ -233,9 +234,38 @@ export default function Home() {
               <div className="text-[var(--muted)] text-xs mt-1.5">月度无限</div>
             </div>
           </div>
-          <p className="text-slate-400 text-xs mt-5">微信扫码联系客服开通 · 24小时内处理</p>
+
+          <div className="mt-6 flex flex-col items-center gap-3">
+            {/* 有收款码时放到 public/qrcode.png，会自动显示 */}
+            <QrCodeImage />
+            <p className="text-slate-600 text-sm">
+              添加微信：
+              <span className="font-semibold text-[var(--primary-deep)] select-all">{CONTACT_WECHAT}</span>
+              （备注「论文」）· 24小时内处理
+            </p>
+            <p className="text-slate-400 text-xs max-w-md leading-relaxed">{PAYMENT_DELIVERY}</p>
+          </div>
         </section>
+
+        <footer className="mt-10 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
+          <p>本工具仅用于学术写作辅助与语言表达优化，不提供代写服务。</p>
+          <p className="mt-1">使用者应遵守所在院校的学术规范，因使用本工具产生的一切后果由使用者自行承担。</p>
+        </footer>
       </main>
     </div>
   )
 }
+
+function QrCodeImage() {
+  const [visible, setVisible] = useState(true)
+  if (!visible) return null
+  return (
+    <img
+      src="/qrcode.png"
+      alt="微信收款"
+      className="w-32 h-32 mx-auto rounded-lg border border-slate-200 bg-white object-contain"
+      onError={() => setVisible(false)}
+    />
+  )
+}
+
