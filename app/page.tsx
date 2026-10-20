@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { CONTACT_WECHAT, PAYMENT_DELIVERY } from '@/lib/contact'
+import { MONTH_CODES, ONCE_CODES } from '@/lib/codes'
 
 type Tab = 'rewrite' | 'polish' | 'reference'
 
@@ -36,6 +37,28 @@ export default function Home() {
   const [freeLeft, setFreeLeft] = useState(3)
   const [copied, setCopied] = useState(false)
   const [csOpen, setCsOpen] = useState(false)
+  const [redeemCode, setRedeemCode] = useState('')
+
+  const handleRedeem = () => {
+    const code = redeemCode.trim().toUpperCase()
+    if (!code) {
+      alert('请输入兑换码')
+      return
+    }
+    if (ONCE_CODES.includes(code)) {
+      setFreeLeft(prev => prev + 1)
+      setRedeemCode('')
+      alert('兑换成功！已增加 1 次额度')
+      return
+    }
+    if (MONTH_CODES.includes(code)) {
+      setFreeLeft(9999)
+      setRedeemCode('')
+      alert('月度会员已开通！')
+      return
+    }
+    alert('兑换码无效，请核对后重试')
+  }
 
   const handleSubmit = async () => {
     if (!input.trim()) return
@@ -240,14 +263,51 @@ export default function Home() {
             type="button"
             onClick={() => setCsOpen(true)}
             className="
-              mt-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
+              mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
               text-[var(--primary-deep)] bg-sky-50 border border-sky-200
               transition-all duration-200
               hover:bg-sky-100 hover:-translate-y-0.5 hover:shadow-sm
             "
           >
-            点击右下角客服扫码开通
+            点右下角客服扫码付款
           </button>
+
+          <div className="mt-6 max-w-md mx-auto text-left">
+            <p className="text-sm text-slate-500 text-center mb-3">
+              付款后客服会发兑换码，在下方输入开通
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={redeemCode}
+                onChange={e => setRedeemCode(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleRedeem()
+                }}
+                placeholder="输入兑换码"
+                className="
+                  flex-1 min-h-11 px-4 rounded-xl text-sm
+                  bg-slate-50 border border-slate-200 text-slate-800
+                  focus:outline-none focus:border-sky-400 focus:ring-4 focus:ring-sky-100
+                  transition-all
+                "
+              />
+              <button
+                type="button"
+                onClick={handleRedeem}
+                className="
+                  min-h-11 px-5 rounded-xl text-sm font-semibold text-white
+                  bg-sky-500 hover:bg-sky-400 transition-all
+                  active:scale-[0.98]
+                "
+              >
+                兑换
+              </button>
+            </div>
+            <p className="text-xs text-slate-400 text-center mt-3">
+              长按收款码联系客服 · 24小时内处理
+            </p>
+          </div>
         </section>
 
         <footer className="mt-10 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
