@@ -3,31 +3,100 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --bg: #f3f7fb;
+  --bg-accent: #e8f3ff;
+  --surface: #ffffff;
+  --border: #d7e3f0;
+  --text: #152033;
+  --muted: #5b6b80;
+  --primary: #0ea5e9;
+  --primary-deep: #0284c7;
+  --primary-soft: #e0f2fe;
+  --success: #059669;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, #dbeafe 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, #ccfbf1 0%, transparent 50%),
+    var(--bg);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes arrow-flow {
+  0% {
+    transform: translateX(-6px);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateX(6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-6px);
+    opacity: 0.45;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(14, 165, 233, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease both;
+}
+
+.animate-arrow-flow {
+  animation: arrow-flow 1.6s ease-in-out infinite;
+}
+
+/* 中间箭头：默认静止，悬停或处理中才动 */
+.arrow-btn:hover .arrow-icon,
+.arrow-btn.is-busy .arrow-icon {
+  animation: arrow-flow 1.6s ease-in-out infinite;
+}
+
+.arrow-btn:hover {
+  transform: scale(1.05);
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #bae6fd;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
 }
